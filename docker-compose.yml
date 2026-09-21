@@ -1,0 +1,109 @@
+version: '3.8'
+
+services:
+  # PostgreSQL SQL Database Service
+  postgres-db:
+    image: postgres:16-alpine
+    container_name: healthsphere-postgres
+    restart: always
+    environment:
+      POSTGRES_USER: healthuser
+      POSTGRES_PASSWORD: healthpass
+      POSTGRES_DB: healthspheredb
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U healthuser -d healthspheredb"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Redis - backs the Patient Care / Clinician Assist agent task queue
+  # and caches active chat sessions for the RAG chatbot.
+  redis-cache:
+    image: redis:7-alpine
+    container_name: healthsphere-redis
+    restart: always
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+
+  # ChromaDB - vector store for the RAG chatbot's knowledge base
+  # (app FAQ + general health-education content). See
+  # backend/app/chatbot/seed_knowledge_base.py to populate it.
+  vector-store:
+    image: chromadb/chroma:0.5.5
+    container_name: healthsphere-vector-store
+    restart: always
+    ports:
+      - "8001:8000"
+    volumes:
+      - chroma_data:/chroma/chroma
+
+  # FastAPI Backend Service
+  backend-api:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.backend
+    container_name: healthsphere-backend
+    restart: always
+    ports:
+      - "8000:8000"
+    environment:
+      - DATABASE_URL=postgresql://healthuser:healthpass@postgres-db:5432/healthspheredb
+      - REDIS_URL=redis://redis-cache:6379/0
+      - VECTOR_STORE_HOST=vector-store
+      - VECTOR_STORE_PORT=8000
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
+      - RXNAV_BASE_URL=https://rxnav.nlm.nih.gov/REST
+      - OPENFDA_BASE_URL=https://api.fda.gov/drug/label.json
+      - TWILIO_ACCOUNT_SID=${TWILIO_ACCOUNT_SID}
+      - TWILIO_AUTH_TOKEN=${TWILIO_AUTH_TOKEN}
+      - TWILIO_FROM_NUMBER=${TWILIO_FROM_NUMBER}
+    depends_on:
+      postgres-db:
+        condition: service_healthy
+      redis-cache:
+        condition: service_started
+      vector-store:
+        condition: service_started
+
+  # Agent Worker - runs the Patient Care Agent (daily digests, adherence
+  # nudges, reminder scheduling) and the Clinician Assist Agent (worklist
+  # refresh, escalation triage) as periodic background jobs via APScheduler,
+  # so the request/response API isn't blocked doing this work inline.
+  agent-worker:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.backend
+    container_name: healthsphere-agent-worker
+    restart: always
+    command: ["python", "-m", "app.agents.worker"]
+    environment:
+      - DATABASE_URL=postgresql://healthuser:healthpass@postgres-db:5432/healthspheredb
+      - REDIS_URL=redis://redis-cache:6379/0
+    depends_on:
+      postgres-db:
+        condition: service_healthy
+      redis-cache:
+        condition: service_started
+
+  # React + Three.js NGINX Frontend Service
+  frontend-ui:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.frontend
+    container_name: healthsphere-frontend
+    restart: always
+    ports:
+      - "80:80"
+    depends_on:
+      - backend-api
+
+volumes:
+  postgres_data:
+  redis_data:
+  chroma_data:

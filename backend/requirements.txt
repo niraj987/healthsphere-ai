@@ -1,0 +1,41 @@
+# --- Core API ---
+fastapi==0.115.0
+uvicorn[standard]==0.30.6
+pydantic==2.9.2
+pydantic[email]==2.9.2
+python-dotenv==1.0.1
+python-multipart==0.0.9
+
+# --- Database ---
+sqlalchemy==2.0.35
+psycopg2-binary==2.9.9
+alembic==1.13.2
+
+# --- OCR / Data Ingestion (Module 1) ---
+pytesseract==0.3.13
+pillow==10.4.0
+pdf2image==1.17.0
+spacy==3.7.6
+
+# --- ML Engine (Module 2) ---
+scikit-learn==1.5.2
+xgboost==2.1.1
+pandas==2.2.3
+numpy==1.26.4
+
+# --- Explainability & Longitudinal (Module 3) ---
+shap==0.46.0
+
+# --- AI Agents + RAG Chatbot (new) ---
+anthropic==0.34.2
+chromadb==0.5.5
+requests==2.32.3
+apscheduler==3.10.4          # scheduling reminders / worklist refresh jobs
+redis==5.0.8                 # agent task queue + chat session cache
+
+# --- Notifications ---
+twilio==9.3.2
+
+# --- Auth ---
+python-jose[cryptography]==3.3.0
+passlib==1.7.4
