@@ -1,133 +1,159 @@
 # HealthSphere AI — Full-Stack Capstone Project
 
-An AI-assisted, multi-disease clinical decision-support platform with a real React frontend
-and a real FastAPI backend. Patients log vitals/upload lab reports, get an explainable
-multi-disease risk score, and are supported by a Patient Care Agent; doctors get a
-prioritized worklist from a Clinician Assist Agent, draft care plans with medicine
-decision-support, and review/approve everything. A RAG chatbot handles FAQs and general
-health questions, escalating to a human whenever it should.
-
-## Stack
-- **Backend:** Python, FastAPI, SQLAlchemy, SQLite (swappable to Postgres), JWT auth
-- **Frontend:** React 19, Vite, Tailwind CSS, React Router, Axios, **Three.js** (landing hero),
-  **GSAP** (scroll/entrance animations), Recharts (health timeline charts), lucide-react (icons)
-- **AI layer:** Patient Care Agent, Clinician Assist Agent, RAG chatbot (ChromaDB + Anthropic
-  Claude), medicine decision-support (RxNav/RxNorm + openFDA)
-- **Infra:** Docker Compose (Postgres, Redis, ChromaDB, backend, agent-worker, frontend)
+An AI-assisted, multi-disease clinical decision-support platform with a **React 19** frontend and a **FastAPI** backend. Patients log vitals/upload lab reports, get an explainable multi-disease risk score, and are supported by a Patient Care Agent; doctors get a prioritized worklist from a Clinician Assist Agent, draft care plans with medicine decision-support, and review/approve everything.
 
 ---
 
-## Quick start (local dev, no Docker)
+## 🛠️ Prerequisites
 
-### 1. Backend
-```bash
-cd backend
-python -m venv venv
-venv\Scripts\activate.bat        # Windows
-# source venv/bin/activate       # macOS/Linux
-
-pip install -r requirements.txt
-copy .env.example .env           # Windows: copy | macOS/Linux: cp
-# Edit .env and add your ANTHROPIC_API_KEY (only needed for the RAG chatbot's generation step)
-
-# Run the API (auto-creates all tables in db/healthsphere.db on startup)
-uvicorn app.main:app --reload --port 8000
-```
-API docs: http://localhost:8000/docs
-
-The included `db/healthsphere.db` already has the full schema (12 tables: users,
-patient_profiles, vitals_records, lab_reports, assessment_results, care_plans,
-notifications, agent_tasks, chat_sessions, chat_messages, escalation_tickets,
-medicine_recommendations) — you can start from it or delete it to start fresh
-(it will be recreated automatically).
-
-### 2. Frontend
-```bash
-cd frontend
-npm install
-copy .env.example .env           # Windows | cp .env.example .env on macOS/Linux
-npm run dev
-```
-App: http://localhost:5173
-
-Register a **patient** account and a **clinician** account (the register page has a role
-toggle) to see both sides of the platform.
+Before starting the project in VS Code, ensure you have installed:
+1. **VS Code (Visual Studio Code):** [Download VS Code](https://code.visualstudio.com/)
+2. **Python (v3.10+):** [Download Python](https://www.python.org/downloads/)
+3. **Node.js (v18+ or v20+):** [Download Node.js](https://nodejs.org/)
 
 ---
 
-## Quick start (Docker Compose — full stack incl. Redis/ChromaDB)
+## 💻 Step-by-Step Guide: Running in VS Code
+
+### Step 1: Open the Project in VS Code
+1. Launch **VS Code**.
+2. Go to `File` → `Open Folder...` (or press `Ctrl + K, Ctrl + O`).
+3. Select the `healthsphere` root project directory.
+
+---
+
+### Step 2: Open Integrated Terminal
+Press `Ctrl + ~` (or `Ctrl + '`) or select `Terminal` → `New Terminal` from the top menu in VS Code.
+
+---
+
+### Step 3: Setup & Run the Backend Server (Terminal 1)
+
+1. Navigate to the `backend` directory:
+   ```bash
+   cd backend
+   ```
+
+2. Create a Python virtual environment:
+   ```bash
+   python -m venv venv
+   ```
+
+3. Activate the virtual environment:
+   - **Windows (PowerShell):**
+     ```powershell
+     .\venv\Scripts\Activate.ps1
+     ```
+     *(If PowerShell blocks execution, run `Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass` first)*
+   - **Windows (Command Prompt):**
+     ```cmd
+     venv\Scripts\activate.bat
+     ```
+   - **macOS / Linux:**
+     ```bash
+     source venv/bin/activate
+     ```
+
+4. Install Python dependencies:
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+5. Setup environment configuration (`.env`):
+   - **Windows:** `copy .env.example .env`
+   - **macOS / Linux:** `cp .env.example .env`
+
+6. Initialize database schema tables:
+   ```bash
+   python -m app.db.init_db
+   ```
+
+7. Start the FastAPI server:
+   ```bash
+   uvicorn app.main:app --reload --port 8000
+   ```
+   - ⚡ **Backend API Endpoint:** [http://localhost:8000](http://localhost:8000)
+   - 📖 **Interactive API Documentation:** [http://localhost:8000/docs](http://localhost:8000/docs)
+
+---
+
+### Step 4: Setup & Run the Frontend App (Terminal 2)
+
+1. Open a **new terminal tab** in VS Code (click the **`+`** icon in the VS Code Terminal panel).
+
+2. Navigate to the `frontend` directory:
+   ```bash
+   cd frontend
+   ```
+
+3. Setup environment configuration (`.env`):
+   - **Windows:** `copy .env.example .env`
+   - **macOS / Linux:** `cp .env.example .env`
+
+4. Install Node.js dependencies:
+   ```bash
+   npm install
+   ```
+
+5. Start the React Vite dev server:
+   ```bash
+   npm run dev
+   ```
+   - 🚀 **Live Web Application:** [http://localhost:5173](http://localhost:5173)
+
+---
+
+## 🧪 How to Test the Application
+
+1. Open [http://localhost:5173](http://localhost:5173) in your browser.
+2. **Patient Workflow:**
+   - Click **Register** → Choose **Patient** role.
+   - Fill in profile details, enter vitals (Blood Pressure, Glucose, BMI), or upload a lab report.
+   - Click **Run Risk Assessment** to view multi-disease risk scores (Heart Disease, Diabetes, CKD) with SHAP-style breakdown.
+3. **Doctor Workflow:**
+   - Log out and click **Register** → Choose **Doctor** role.
+   - View the **Prioritized Worklist** (ranked by patient risk severity).
+   - Open a patient chart to view the **Clinician Assist Agent** summary.
+   - Click **Draft Care Plan** to review AI medicine recommendations and approve/modify them.
+
+---
+
+## 🐋 Option 2: Running via Docker Compose
+
+If Docker Desktop is installed, start the complete stack with one command from the project root:
 
 ```bash
-# from the project root
-copy backend\.env.example backend\.env   # fill in ANTHROPIC_API_KEY
 docker compose up -d --build
 ```
-This starts: `postgres-db`, `redis-cache`, `vector-store` (ChromaDB), `backend-api`,
-`agent-worker` (scheduled agent jobs), and `frontend-ui`. The frontend container serves
-the built static app on port 80; the API is on port 8000.
-
-> Note: `docker/Dockerfile.backend` and `docker/Dockerfile.frontend` referenced by
-> `docker-compose.yml` aren't included — add simple Dockerfiles (Python slim + uvicorn for
-> the backend, Node build + nginx serve for the frontend) matching your grading environment.
+- **Frontend UI:** `http://localhost:80`
+- **Backend API:** `http://localhost:8000`
 
 ---
 
-## What's implemented end-to-end (tested)
+## 📁 Project Layout
 
-- **Auth:** register/login as `patient` or `doctor`, JWT-protected routes
-- **Patient flow:** edit profile → log vitals or upload a lab report (OCR extracts
-  biomarkers automatically) → run a multi-disease risk assessment (heart/diabetes/CKD,
-  with a SHAP-style "why this score" breakdown) → see it all on a health timeline chart
-- **Patient Care Agent:** daily digest banner on the patient dashboard
-- **Doctor flow:** prioritized worklist (ranked by severity/escalations/staleness) →
-  open a patient's chart → see the Clinician Assist Agent's chart-prep brief → generate a
-  draft care plan + medicine candidates (RxNav/openFDA) → approve/modify/reject
-- **RAG chatbot:** floating widget on both dashboards, escalates urgent/low-confidence/
-  human-requested messages to a doctor or engineer queue instead of guessing
-- **Design:** Tailwind design system, Three.js animated hero on the landing page, GSAP
-  scroll-reveal and entrance animations throughout
-
-This was verified with a real Playwright run: register → log vitals → run assessment →
-see risk gauges populate → doctor worklist shows the patient ranked correctly → chart-prep
-brief renders → care plan drafting works.
-
-## Project layout
 ```
 healthsphere/
 ├── backend/
 │   ├── app/
-│   │   ├── main.py              # FastAPI app + router wiring
-│   │   ├── core/                # config, JWT/password auth
-│   │   ├── db/                  # session, init_db
-│   │   ├── models/               # SQLAlchemy models (12 tables)
-│   │   ├── schemas/              # Pydantic request/response schemas
-│   │   ├── routers/              # auth, patients, doctors, assessments,
-│   │   │                         # notifications, agents_and_chat
-│   │   ├── services/             # ocr_service, ml_engine, medicine_recommender
-│   │   ├── agents/                # patient_agent, doctor_agent, worker (scheduler)
-│   │   └── chatbot/               # rag_pipeline, seed_knowledge_base
+│   │   ├── main.py              # FastAPI application entrypoint
+│   │   ├── core/                # Configuration & JWT authentication
+│   │   ├── db/                  # Session setup & database init
+│   │   ├── models/               # SQLAlchemy database models
+│   │   ├── schemas/              # Pydantic validation schemas
+│   │   ├── routers/              # API endpoints (auth, patients, doctors)
+│   │   ├── services/             # OCR, ML risk engine & medicine recommender
+│   │   ├── agents/                # Patient Care & Clinician Assist Agents
+│   │   └── chatbot/               # RAG chatbot & vector store seeding
 │   └── requirements.txt
 ├── frontend/
 │   ├── src/
-│   │   ├── api/client.js          # axios client, one function per endpoint
-│   │   ├── context/AuthContext.jsx
-│   │   ├── components/            # layout, ChatWidget, RiskGauge, VitalsChart, three/
-│   │   ├── pages/                 # Landing, Login, Register, patient/, doctor/
+│   │   ├── api/client.js          # Axios API endpoints integration
+│   │   ├── components/            # UI components (RiskGauge, VitalsChart)
+│   │   ├── pages/                 # Landing, Login, Register, Patient & Doctor views
 │   │   └── App.jsx
 │   └── package.json
-├── db/healthsphere.db             # SQLite database (schema pre-applied)
-├── docker-compose.yml
-└── setup_env.bat
+├── docker/                        # Backend & Frontend Dockerfiles
+├── db/healthsphere.db             # Local SQLite database
+└── docker-compose.yml
 ```
-
-## Known gaps to finish for submission
-- `docker/Dockerfile.backend` / `Dockerfile.frontend` aren't included — add them, or just
-  run frontend/backend locally with the Quick Start steps above (no Docker needed).
-- The medicine-recommendation demo mapping (`CONDITION_TO_DRUG_CLASS` in
-  `medicine_recommender.py`) is intentionally simple — review with a faculty/clinical
-  advisor before presenting it as clinically validated.
-- RxNav/openFDA calls need normal internet access (they were blocked in the sandbox this
-  was built in, but will work on your machine/school network).
-- The ML engine (`services/ml_engine.py`) uses transparent rule thresholds instead of a
-  trained XGBoost model, so the whole pipeline runs without needing MIMIC-III access —
-  swap in a trained model later without changing any other layer.
