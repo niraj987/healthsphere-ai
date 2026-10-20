@@ -33,8 +33,8 @@ export function AuthProvider({ children }) {
         const isDoctor = email.toLowerCase().includes("doctor") || email.toLowerCase().includes("dr");
         const fallbackUser = {
           id: isDoctor ? 1 : 2,
-          email: email || "kumarniraj11045@gmail.com",
-          full_name: email ? email.split("@")[0].replace(".", " ").replace(/\b\w/g, (l) => l.toUpperCase()) : "Niraj Kumar",
+          email: email || (isDoctor ? "doctor@smarthospital.med" : "patient@smarthospital.med"),
+          full_name: email ? email.split("@")[0].replace(".", " ").replace(/\b\w/g, (l) => l.toUpperCase()) : (isDoctor ? "Dr. Specialist" : "Hospital Patient"),
           role: isDoctor ? "doctor" : "patient",
         };
         const fallbackData = { access_token: "demo-token-" + Date.now(), user: fallbackUser };
@@ -54,8 +54,8 @@ export function AuthProvider({ children }) {
       if (!err.response || err.response.status === 404 || err.code === "ERR_NETWORK") {
         const fallbackUser = {
           id: Date.now(),
-          email: payload.email || "kumarniraj11045@gmail.com",
-          full_name: payload.full_name || "Niraj Kumar",
+          email: payload.email || (payload.role === "doctor" ? "doctor@smarthospital.med" : "patient@smarthospital.med"),
+          full_name: payload.full_name || (payload.role === "doctor" ? "Dr. Specialist" : "Hospital Patient"),
           role: payload.role || "patient",
         };
         const fallbackData = { access_token: "demo-token-" + Date.now(), user: fallbackUser };

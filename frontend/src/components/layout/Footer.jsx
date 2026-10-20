@@ -24,7 +24,7 @@ export default function Footer() {
           </p>
         </div>
         <div className="mt-8 flex flex-col gap-2 text-xs text-ink-400 md:flex-row md:items-center md:justify-between">
-          <span>© {new Date().getFullYear()} Smart Hospital Management · Account: kumarniraj11045@gmail.com</span>
+          <span>© {new Date().getFullYear()} Smart Hospital Management · All rights reserved</span>
           <span>Decision support only · Human review required</span>
         </div>
       </div>

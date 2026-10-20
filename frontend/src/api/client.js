@@ -42,7 +42,7 @@ const withFallback = (promise, fallbackData) =>
 export const getMyProfile = () =>
   api.get("/api/patients/me").then((r) => r.data).catch(() => {
     const stored = localStorage.getItem("hs_user");
-    const u = stored ? JSON.parse(stored) : { full_name: "Niraj Kumar", email: "kumarniraj11045@gmail.com" };
+    const u = stored ? JSON.parse(stored) : { full_name: "Clinical Patient", email: "patient@smarthospital.med" };
     return { id: 2, user_id: 2, medical_record_number: "MRN-100204", age: 45, gender: "male", bmi: 26.4, ...u };
   });
 

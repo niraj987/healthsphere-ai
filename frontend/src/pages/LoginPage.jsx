@@ -7,7 +7,7 @@ import { useAuth } from "../context/AuthContext";
 export default function LoginPage() {
   const { login } = useAuth();
   const navigate = useNavigate();
-  const [form, setForm] = useState({ email: "kumarniraj11045@gmail.com", password: "" });
+  const [form, setForm] = useState({ email: "", password: "" });
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
@@ -49,7 +49,7 @@ export default function LoginPage() {
         </Link>
 
         <h1 className="font-display text-2xl font-bold text-ink-900">Welcome back</h1>
-        <p className="mt-1 text-sm text-ink-500">Sign in to your Niraj Kumar hospital account.</p>
+        <p className="mt-1 text-sm text-ink-500">Sign in to your hospital account.</p>
 
         <form onSubmit={handleSubmit} className="mt-6 space-y-4">
           <div>

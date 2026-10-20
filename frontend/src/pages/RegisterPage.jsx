@@ -7,7 +7,7 @@ import { useAuth } from "../context/AuthContext";
 export default function RegisterPage() {
   const { register } = useAuth();
   const navigate = useNavigate();
-  const [form, setForm] = useState({ full_name: "Niraj Kumar", email: "kumarniraj11045@gmail.com", password: "", role: "patient" });
+  const [form, setForm] = useState({ full_name: "", email: "", password: "", role: "patient" });
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
