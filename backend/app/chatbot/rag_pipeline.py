@@ -46,7 +46,7 @@ TECHNICAL_KEYWORDS = [
     "app is broken", "report a bug", "notification not working", "sync",
 ]
 
-SYSTEM_PROMPT = """You are the HealthSphere AI Assistant, a support chatbot for a clinical
+SYSTEM_PROMPT = """You are the Smart Hospital Assistant, a support chatbot for a clinical
 decision-support platform. You may:
   - explain how to use the app (upload a report, read your dashboard, etc.)
   - explain general, publicly known health/education concepts in plain language
@@ -80,7 +80,7 @@ class VectorStoreClient:
     DEFAULT_DOCS = [
         {
             "id": "faq_upload_lab",
-            "text": "To upload a lab report on HealthSphere: Navigate to the Medical Records or Patient Dashboard tab, click 'Upload Lab Report', select your PDF or image file (CBC, Metabolic Panel, Lipid Panel), and click submit. Our OCR engine automatically extracts biomarkers and logs your vitals."
+            "text": "To upload a lab report on Smart Hospital Management: Navigate to the Medical Records or Patient Dashboard tab, click 'Upload Lab Report', select your PDF or image file (CBC, Metabolic Panel, Lipid Panel), and click submit. Our OCR engine automatically extracts biomarkers and logs your vitals."
         },
         {
             "id": "faq_vitals_tracking",
@@ -195,10 +195,10 @@ def _call_llm(system_prompt: str, context_chunks: list[str], question: str) -> s
 
     # Grounded fallback synthesizer using retrieved knowledge chunks
     if not context_chunks:
-        return "I couldn't find specific information regarding your request in the HealthSphere knowledge base."
+        return "I couldn't find specific information regarding your request in the Smart Hospital Management knowledge base."
     
     primary_info = "\n\n".join(context_chunks[:2])
-    return f"Based on HealthSphere clinical and platform guidance:\n\n{primary_info}\n\n*Note: This information is for general educational & navigation purposes. Please consult your physician for personalized medical advice.*"
+    return f"Based on Smart Hospital Management clinical and platform guidance:\n\n{primary_info}\n\n*Note: This information is for general educational & navigation purposes. Please consult your physician for personalized medical advice.*"
 
 
 
