@@ -1,13 +1,14 @@
 import { useEffect, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import gsap from "gsap";
-import { Activity, Stethoscope, User, UserPlus } from "lucide-react";
+import { Activity, Eye, EyeOff, Stethoscope, User, UserPlus } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
 
 export default function RegisterPage() {
   const { register } = useAuth();
   const navigate = useNavigate();
-  const [form, setForm] = useState({ full_name: "", email: "", password: "", role: "patient" });
+  const [form, setForm] = useState({ full_name: "Niraj Kumar", email: "kumarniraj11045@gmail.com", password: "", role: "patient" });
+  const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const cardRef = useRef(null);
@@ -32,16 +33,23 @@ export default function RegisterPage() {
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-ink-50 px-6 py-12">
-      <div ref={cardRef} className="card w-full max-w-md p-8">
-        <Link to="/" className="mb-6 flex items-center gap-2">
-          <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-brand-600 text-white">
-            <Activity size={18} />
+      <div ref={cardRef} className="card w-full max-w-md p-8 shadow-soft">
+        <Link to="/" className="mb-6 flex items-center gap-3 group">
+          <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-brand-600 to-brand-800 text-white shadow-sm ring-2 ring-brand-100 group-hover:scale-105 transition-transform">
+            <Activity size={20} className="text-white" />
           </span>
-          <span className="font-display text-lg font-bold">HealthSphere AI</span>
+          <div className="flex flex-col text-left">
+            <span className="font-display text-base font-extrabold tracking-tight text-ink-900 leading-tight">
+              Smart Hospital
+            </span>
+            <span className="text-[11px] font-bold uppercase tracking-wider text-brand-600 -mt-0.5 flex items-center gap-1.5">
+              Management <span className="inline-block h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
+            </span>
+          </div>
         </Link>
 
         <h1 className="font-display text-2xl font-bold text-ink-900">Create your account</h1>
-        <p className="mt-1 text-sm text-ink-500">Choose how you'll use HealthSphere AI.</p>
+        <p className="mt-1 text-sm text-ink-500">Access Smart Hospital Management platform.</p>
 
         <div className="mt-5 grid grid-cols-2 gap-3">
           <button
@@ -88,15 +96,26 @@ export default function RegisterPage() {
           </div>
           <div>
             <label className="label">Password</label>
-            <input
-              type="password"
-              required
-              minLength={6}
-              className="input"
-              placeholder="At least 6 characters"
-              value={form.password}
-              onChange={(e) => setForm({ ...form, password: e.target.value })}
-            />
+            <div className="relative">
+              <input
+                type={showPassword ? "text" : "password"}
+                required
+                minLength={6}
+                className="input pr-10"
+                placeholder="At least 6 characters"
+                value={form.password}
+                onChange={(e) => setForm({ ...form, password: e.target.value })}
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute right-2.5 top-1/2 -translate-y-1/2 rounded-lg p-1.5 text-ink-400 hover:bg-ink-100 hover:text-ink-800 focus:outline-none transition"
+                title={showPassword ? "Hide password" : "Show password"}
+                aria-label={showPassword ? "Hide password" : "Show password"}
+              >
+                {showPassword ? <EyeOff size={18} className="text-brand-600 font-bold" /> : <Eye size={18} />}
+              </button>
+            </div>
           </div>
 
           {error && <p className="rounded-lg bg-accent-50 px-3 py-2 text-sm text-accent-700">{error}</p>}

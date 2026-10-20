@@ -12,7 +12,7 @@ export default function ChatWidget() {
     {
       role: "assistant",
       content:
-        "Hi! I'm the HealthSphere Assistant. Ask me how to use the app, or general health questions. " +
+        "Hi! I'm the Smart Hospital Assistant. Ask me how to use the app, or general health questions. " +
         "If you describe symptoms or need a clinician, I'll connect you with a human right away.",
     },
   ]);
@@ -76,7 +76,7 @@ export default function ChatWidget() {
         >
           <div className="flex items-center justify-between bg-brand-600 px-4 py-3 text-white">
             <div>
-              <p className="text-sm font-semibold">HealthSphere Assistant</p>
+              <p className="text-sm font-semibold">Smart Hospital Assistant</p>
               <p className="text-xs text-brand-100">RAG-powered · escalates to a human when needed</p>
             </div>
             <button onClick={() => setOpen(false)} aria-label="Close chat">

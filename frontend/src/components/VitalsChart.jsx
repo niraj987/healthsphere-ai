@@ -5,8 +5,10 @@ export default function VitalsChart({ vitals = [] }) {
   const data = vitals.map((v) => ({
     date: format(new Date(v.recorded_at), "MMM d"),
     "Systolic BP": v.systolic_bp,
-    "Fasting Glucose": v.fasting_glucose,
-    "Cholesterol": v.cholesterol,
+    "Heart Rate": v.heart_rate,
+    "SpO2 (%)": v.spo2,
+    "Resp Rate": v.respiratory_rate,
+    "Glucose": v.fasting_glucose,
   }));
 
   if (data.length === 0) {
@@ -26,8 +28,10 @@ export default function VitalsChart({ vitals = [] }) {
         <Tooltip contentStyle={{ borderRadius: 12, border: "1px solid #e8ecee", fontSize: 12 }} />
         <Legend wrapperStyle={{ fontSize: 12 }} />
         <Line type="monotone" dataKey="Systolic BP" stroke="#f2590f" strokeWidth={2} dot={{ r: 3 }} connectNulls />
-        <Line type="monotone" dataKey="Fasting Glucose" stroke="#2f8b7c" strokeWidth={2} dot={{ r: 3 }} connectNulls />
-        <Line type="monotone" dataKey="Cholesterol" stroke="#4a5e69" strokeWidth={2} dot={{ r: 3 }} connectNulls />
+        <Line type="monotone" dataKey="Heart Rate" stroke="#e11d48" strokeWidth={2} dot={{ r: 3 }} connectNulls />
+        <Line type="monotone" dataKey="SpO2 (%)" stroke="#0284c7" strokeWidth={2.5} dot={{ r: 3 }} connectNulls />
+        <Line type="monotone" dataKey="Resp Rate" stroke="#8b5cf6" strokeWidth={2} dot={{ r: 3 }} connectNulls />
+        <Line type="monotone" dataKey="Glucose" stroke="#2f8b7c" strokeWidth={2} dot={{ r: 3 }} connectNulls />
       </LineChart>
     </ResponsiveContainer>
   );

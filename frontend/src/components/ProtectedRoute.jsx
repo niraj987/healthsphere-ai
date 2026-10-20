@@ -7,7 +7,7 @@ export default function ProtectedRoute({ children, role }) {
   if (loading) {
     return (
       <div className="flex min-h-screen items-center justify-center text-sm text-ink-500">
-        Loading HealthSphere…
+        Loading Smart Hospital Management…
       </div>
     );
   }

@@ -1,13 +1,14 @@
 import { useEffect, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import gsap from "gsap";
-import { Activity, LogIn } from "lucide-react";
+import { Activity, Eye, EyeOff, LogIn } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
 
 export default function LoginPage() {
   const { login } = useAuth();
   const navigate = useNavigate();
-  const [form, setForm] = useState({ email: "", password: "" });
+  const [form, setForm] = useState({ email: "kumarniraj11045@gmail.com", password: "" });
+  const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const cardRef = useRef(null);
@@ -32,16 +33,23 @@ export default function LoginPage() {
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-ink-50 px-6">
-      <div ref={cardRef} className="card w-full max-w-md p-8">
-        <Link to="/" className="mb-6 flex items-center gap-2">
-          <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-brand-600 text-white">
-            <Activity size={18} />
+      <div ref={cardRef} className="card w-full max-w-md p-8 shadow-soft">
+        <Link to="/" className="mb-6 flex items-center gap-3 group">
+          <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-brand-600 to-brand-800 text-white shadow-sm ring-2 ring-brand-100 group-hover:scale-105 transition-transform">
+            <Activity size={20} className="text-white" />
           </span>
-          <span className="font-display text-lg font-bold">HealthSphere AI</span>
+          <div className="flex flex-col text-left">
+            <span className="font-display text-base font-extrabold tracking-tight text-ink-900 leading-tight">
+              Smart Hospital
+            </span>
+            <span className="text-[11px] font-bold uppercase tracking-wider text-brand-600 -mt-0.5 flex items-center gap-1.5">
+              Management <span className="inline-block h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
+            </span>
+          </div>
         </Link>
 
         <h1 className="font-display text-2xl font-bold text-ink-900">Welcome back</h1>
-        <p className="mt-1 text-sm text-ink-500">Sign in to your patient or clinician account.</p>
+        <p className="mt-1 text-sm text-ink-500">Sign in to your Niraj Kumar hospital account.</p>
 
         <form onSubmit={handleSubmit} className="mt-6 space-y-4">
           <div>
@@ -57,14 +65,25 @@ export default function LoginPage() {
           </div>
           <div>
             <label className="label">Password</label>
-            <input
-              type="password"
-              required
-              className="input"
-              placeholder="••••••••"
-              value={form.password}
-              onChange={(e) => setForm({ ...form, password: e.target.value })}
-            />
+            <div className="relative">
+              <input
+                type={showPassword ? "text" : "password"}
+                required
+                className="input pr-10"
+                placeholder="••••••••"
+                value={form.password}
+                onChange={(e) => setForm({ ...form, password: e.target.value })}
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute right-2.5 top-1/2 -translate-y-1/2 rounded-lg p-1.5 text-ink-400 hover:bg-ink-100 hover:text-ink-800 focus:outline-none transition"
+                title={showPassword ? "Hide password" : "Show password"}
+                aria-label={showPassword ? "Hide password" : "Show password"}
+              >
+                {showPassword ? <EyeOff size={18} className="text-brand-600 font-bold" /> : <Eye size={18} />}
+              </button>
+            </div>
           </div>
 
           {error && <p className="rounded-lg bg-accent-50 px-3 py-2 text-sm text-accent-700">{error}</p>}
@@ -72,6 +91,13 @@ export default function LoginPage() {
           <button type="submit" disabled={loading} className="btn-primary w-full">
             <LogIn size={16} /> {loading ? "Signing in…" : "Sign in"}
           </button>
+
+          <div className="rounded-lg border border-brand-200/80 bg-brand-50/70 p-3 text-center text-xs text-ink-600">
+            🔑 <strong>Database Passwords:</strong>{" "}
+            <code className="rounded bg-white px-1.5 py-0.5 font-bold text-brand-700 border border-brand-200">user1_987</code>,{" "}
+            <code className="rounded bg-white px-1.5 py-0.5 font-bold text-brand-700 border border-brand-200">user2_987</code> ...{" "}
+            <code className="rounded bg-white px-1.5 py-0.5 font-bold text-brand-700 border border-brand-200">user7_987</code>
+          </div>
         </form>
 
         <p className="mt-6 text-center text-sm text-ink-500">

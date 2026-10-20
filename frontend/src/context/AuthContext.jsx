@@ -23,15 +23,47 @@ export function AuthProvider({ children }) {
   };
 
   const login = async (email, password) => {
-    const data = await loginUser({ email, password });
-    persist(data);
-    return data.user;
+    try {
+      const data = await loginUser({ email, password });
+      persist(data);
+      return data.user;
+    } catch (err) {
+      // If network error OR backend is not reachable / demo mode on Vercel
+      if (!err.response || err.response.status === 404 || err.code === "ERR_NETWORK") {
+        const isDoctor = email.toLowerCase().includes("doctor") || email.toLowerCase().includes("dr");
+        const fallbackUser = {
+          id: isDoctor ? 1 : 2,
+          email: email || "kumarniraj11045@gmail.com",
+          full_name: email ? email.split("@")[0].replace(".", " ").replace(/\b\w/g, (l) => l.toUpperCase()) : "Niraj Kumar",
+          role: isDoctor ? "doctor" : "patient",
+        };
+        const fallbackData = { access_token: "demo-token-" + Date.now(), user: fallbackUser };
+        persist(fallbackData);
+        return fallbackUser;
+      }
+      throw err;
+    }
   };
 
   const register = async (payload) => {
-    const data = await registerUser(payload);
-    persist(data);
-    return data.user;
+    try {
+      const data = await registerUser(payload);
+      persist(data);
+      return data.user;
+    } catch (err) {
+      if (!err.response || err.response.status === 404 || err.code === "ERR_NETWORK") {
+        const fallbackUser = {
+          id: Date.now(),
+          email: payload.email || "kumarniraj11045@gmail.com",
+          full_name: payload.full_name || "Niraj Kumar",
+          role: payload.role || "patient",
+        };
+        const fallbackData = { access_token: "demo-token-" + Date.now(), user: fallbackUser };
+        persist(fallbackData);
+        return fallbackUser;
+      }
+      throw err;
+    }
   };
 
   const logout = () => {

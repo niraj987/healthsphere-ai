@@ -1,6 +1,10 @@
-# HealthSphere AI — Full-Stack Capstone Project
+# Smart Hospital Management — Full-Stack AI Platform
 
-An AI-assisted, multi-disease clinical decision-support platform with a **React 19** frontend and a **FastAPI** backend. Patients log vitals/upload lab reports, get an explainable multi-disease risk score, and are supported by a Patient Care Agent; doctors get a prioritized worklist from a Clinician Assist Agent, draft care plans with medicine decision-support, and review/approve everything.
+An AI-powered clinical decision-support and hospital workflow platform with a **React 19** frontend and a **FastAPI** backend. Features include:
+- **Clinical AI Examinations:** Supervised ML diagnostic models for **Breast Cancer** (FNA Biopsy), **Cancer Screening** (Cell Nuclei Cytology), **Cardiovascular Heart Disease** (Cleveland RF), and **Diabetes Risk** (Pima RF).
+- **Multi-Disease & Cardiorespiratory Risk Engine:** Continuous monitoring of SpO2, ECG rhythm, HRV, respiratory rate, and airway metrics.
+- **Explainable AI (SHAP-style):** Transparent biomarker contribution breakdowns for every diagnostic finding.
+- **Patient & Clinician Workflows:** Automated chart-prep, daily digests, and doctor-approved care plans.
 
 ---
 

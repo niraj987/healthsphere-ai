@@ -1,8 +1,10 @@
 import { useCallback, useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import gsap from "gsap";
 import {
   Activity, FileText, HeartPulse, LayoutDashboard, Loader2, Sparkles, Stethoscope, Upload,
 } from "lucide-react";
+import CardiopulmonaryCard from "../../components/CardiopulmonaryCard";
 import DashboardShell from "../../components/layout/DashboardShell";
 import ChatWidget from "../../components/ChatWidget";
 import RiskGauge from "../../components/RiskGauge";
@@ -93,13 +95,15 @@ export default function PatientDashboard() {
   const handleVitalsSave = async (e) => {
     e.preventDefault();
     const numeric = Object.fromEntries(
-      Object.entries(vitalsForm).map(([k, v]) => [k, v === "" ? null : Number(v)])
+      Object.entries(vitalsForm).map(([k, v]) => [
+        k, k === "ecg_rhythm" ? v : (v === "" ? null : Number(v))
+      ])
     );
     const record = await addVitals(numeric);
     setVitals((prev) => [...prev, record]);
     setVitalsForm({});
     setVitalsFormOpen(false);
-    setMessage("Vitals logged. Run a new assessment to see updated risk.");
+    setMessage("Cardiorespiratory vitals logged. Run a new assessment to update your Heart & Lung health index.");
   };
 
   const handleUpload = async (e) => {
@@ -126,7 +130,7 @@ export default function PatientDashboard() {
     try {
       const result = await runAssessment(profile.id);
       setAssessment(result);
-      setMessage("New risk assessment generated.");
+      setMessage("New multi-disease & cardiorespiratory assessment generated.");
     } catch (err) {
       setMessage(err?.response?.data?.detail || "Add at least one vitals reading before running an assessment.");
     } finally {
@@ -141,6 +145,8 @@ export default function PatientDashboard() {
       </div>
     );
   }
+
+  const latestVital = vitals.length > 0 ? vitals[vitals.length - 1] : null;
 
   return (
     <DashboardShell
@@ -164,6 +170,34 @@ export default function PatientDashboard() {
         </div>
       )}
 
+      <div className="dash-fade mb-8">
+        <CardiopulmonaryCard assessment={assessment} latestVital={latestVital} />
+      </div>
+
+      {/* Clinical AI Examinations Banner */}
+      <div className="dash-fade mb-8 rounded-2xl border border-brand-100 bg-gradient-to-r from-brand-700 to-indigo-800 p-5 text-white shadow-soft flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+        <div className="flex items-center gap-4">
+          <span className="flex h-12 w-12 items-center justify-center rounded-xl bg-white/10 text-white backdrop-blur-sm">
+            <Sparkles size={24} className="text-brand-200" />
+          </span>
+          <div>
+            <div className="flex items-center gap-2">
+              <h3 className="font-display text-base font-bold">Clinical AI Examinations & Disease Predictor</h3>
+              <span className="rounded bg-white/20 px-1.5 py-0.5 text-[10px] font-extrabold uppercase tracking-wider text-white">New</span>
+            </div>
+            <p className="text-xs text-brand-100 mt-0.5">
+              Trained models for Wisconsin Breast Cancer Biopsy, Cancer Cytology Screening, Cleveland Heart Disease, and Diabetes.
+            </p>
+          </div>
+        </div>
+        <Link
+          to="/examinations"
+          className="btn-primary !bg-white !text-brand-900 hover:!bg-brand-50 shadow-sm text-xs font-bold whitespace-nowrap"
+        >
+          Open Examination Hub →
+        </Link>
+      </div>
+
       <div className="dash-fade grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <StatCard icon={HeartPulse} label="Overall Risk" value={assessment ? `${assessment.overall_risk_score}%` : "—"} hint={assessment ? <SeverityBadge value={assessment.overall_severity} /> : "Run an assessment"} />
         <StatCard icon={Activity} label="Vitals Logged" value={vitals.length} hint="Readings on file" tone="ink" />
@@ -176,16 +210,17 @@ export default function PatientDashboard() {
           <div className="flex items-center justify-between">
             <h2 className="font-display text-lg font-semibold text-ink-900">Health timeline</h2>
             <button onClick={() => setVitalsFormOpen((o) => !o)} className="btn-secondary !px-3 !py-1.5 text-xs">
-              + Log vitals
+              + Log vitals & SpO₂
             </button>
           </div>
 
           {vitalsFormOpen && (
             <form onSubmit={handleVitalsSave} className="mt-4 grid grid-cols-2 gap-3 rounded-xl bg-ink-50 p-4 sm:grid-cols-3">
               {[
-                ["systolic_bp", "Systolic BP"], ["diastolic_bp", "Diastolic BP"], ["heart_rate", "Heart Rate"],
-                ["fasting_glucose", "Fasting Glucose"], ["cholesterol", "Cholesterol"],
-                ["serum_creatinine", "Serum Creatinine"], ["bmi", "BMI"],
+                ["systolic_bp", "Systolic BP (mmHg)"], ["diastolic_bp", "Diastolic BP (mmHg)"], ["heart_rate", "Heart Rate (bpm)"],
+                ["spo2", "Oxygen Saturation (SpO₂ %)"], ["respiratory_rate", "Resp Rate (breaths/min)"], ["hrv", "Heart Rate Var (HRV ms)"],
+                ["fev1", "Airway FEV₁ (L)"], ["pefr", "Peak Flow PEFR (L/min)"], ["fasting_glucose", "Fasting Glucose (mg/dL)"],
+                ["cholesterol", "Cholesterol (mg/dL)"], ["serum_creatinine", "Serum Creatinine"], ["bmi", "BMI"],
               ].map(([key, label]) => (
                 <div key={key}>
                   <label className="label">{label}</label>
@@ -198,8 +233,18 @@ export default function PatientDashboard() {
                   />
                 </div>
               ))}
+              <div>
+                <label className="label">ECG Rhythm</label>
+                <input
+                  type="text"
+                  placeholder="e.g. Normal Sinus"
+                  className="input"
+                  value={vitalsForm.ecg_rhythm ?? ""}
+                  onChange={(e) => setVitalsForm({ ...vitalsForm, ecg_rhythm: e.target.value })}
+                />
+              </div>
               <div className="col-span-2 flex items-end gap-2 sm:col-span-3">
-                <button type="submit" className="btn-primary !px-4 !py-2 text-xs">Save vitals</button>
+                <button type="submit" className="btn-primary !px-4 !py-2 text-xs">Save Cardiorespiratory Vitals</button>
                 <button type="button" onClick={() => setVitalsFormOpen(false)} className="btn-secondary !px-4 !py-2 text-xs">Cancel</button>
               </div>
             </form>
@@ -212,7 +257,7 @@ export default function PatientDashboard() {
 
         <div className="dash-fade card p-6">
           <div className="flex items-center justify-between">
-            <h2 className="font-display text-lg font-semibold text-ink-900">Risk assessment</h2>
+            <h2 className="font-display text-lg font-semibold text-ink-900">Multi-Disease Risk</h2>
             <button onClick={handleRunAssessment} disabled={runningAssessment} className="btn-primary !px-3 !py-1.5 text-xs">
               {runningAssessment ? "Running…" : "Run assessment"}
             </button>
@@ -220,10 +265,11 @@ export default function PatientDashboard() {
 
           {assessment ? (
             <>
-              <div className="mt-5 grid grid-cols-3 gap-2">
-                <RiskGauge label="Heart" percent={assessment.heart_risk_pct} size={92} />
-                <RiskGauge label="Diabetes" percent={assessment.diabetes_risk_pct} size={92} />
-                <RiskGauge label="CKD" percent={assessment.ckd_risk_pct} size={92} />
+              <div className="mt-5 grid grid-cols-2 gap-2 sm:grid-cols-4">
+                <RiskGauge label="Heart" percent={assessment.heart_risk_pct} size={76} />
+                <RiskGauge label="Lung" percent={assessment.lung_risk_pct ?? 0} size={76} />
+                <RiskGauge label="Diabetes" percent={assessment.diabetes_risk_pct} size={76} />
+                <RiskGauge label="CKD" percent={assessment.ckd_risk_pct} size={76} />
               </div>
               <div className="mt-5">
                 <p className="text-xs font-semibold uppercase tracking-wide text-ink-500">Why this score?</p>

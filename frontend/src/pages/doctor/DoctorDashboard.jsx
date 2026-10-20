@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import gsap from "gsap";
-import { AlertTriangle, ClipboardList, LayoutDashboard, Loader2, Users } from "lucide-react";
+import { AlertTriangle, ClipboardList, LayoutDashboard, Loader2, Sparkles, Users } from "lucide-react";
 import DashboardShell from "../../components/layout/DashboardShell";
 import ChatWidget from "../../components/ChatWidget";
 import StatCard from "../../components/StatCard";
@@ -57,6 +57,30 @@ export default function DoctorDashboard() {
         <StatCard icon={Users} label="Total Patients" value={patientCount} tone="ink" />
         <StatCard icon={AlertTriangle} label="High Risk Today" value={urgentCount} tone="accent" />
         <StatCard icon={ClipboardList} label="Open Escalations" value={escalations.length} tone="brand" />
+      </div>
+
+      {/* Clinician ML Diagnostic Examination Suite */}
+      <div className="dash-fade mt-6 rounded-2xl border border-brand-100 bg-gradient-to-r from-brand-700 to-indigo-900 p-5 text-white shadow-soft flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+        <div className="flex items-center gap-3.5">
+          <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-white/10 text-white backdrop-blur-sm">
+            <Sparkles size={22} className="text-brand-200" />
+          </span>
+          <div>
+            <div className="flex items-center gap-2">
+              <h3 className="font-display text-sm font-bold">Specialized Clinical ML Examination Suite</h3>
+              <span className="rounded bg-white/20 px-1.5 py-0.5 text-[10px] font-extrabold uppercase tracking-wider text-white">Live</span>
+            </div>
+            <p className="text-xs text-brand-100 mt-0.5">
+              Run supervised diagnostic screening for Breast Cancer (FNA), Cancer Cytology, Heart Disease (Cleveland RF), and Diabetes.
+            </p>
+          </div>
+        </div>
+        <Link
+          to="/examinations"
+          className="btn-primary !bg-white !text-brand-900 hover:!bg-brand-50 shadow-sm text-xs font-bold whitespace-nowrap"
+        >
+          Launch Diagnostics Suite →
+        </Link>
       </div>
 
       <div className="mt-8 grid grid-cols-1 gap-6 lg:grid-cols-3">

@@ -73,6 +73,7 @@ class PatientProfile(Base):
     agent_tasks = relationship("AgentTask", back_populates="patient")
     escalations = relationship("EscalationTicket", back_populates="patient")
     medicine_recommendations = relationship("MedicineRecommendation", back_populates="patient")
+    examinations = relationship("ClinicalExaminationRecord", back_populates="patient")
 
 
 class Notification(Base):
@@ -100,6 +101,13 @@ class VitalsRecord(Base):
     cholesterol = Column(Float)
     serum_creatinine = Column(Float)
     bmi = Column(Float)
+    # Heart & Lung Monitoring Vitals
+    spo2 = Column(Float)              # Oxygen saturation % (normal 95-100%)
+    respiratory_rate = Column(Float)  # Breaths per minute (normal 12-20)
+    hrv = Column(Float)               # Heart Rate Variability in ms
+    fev1 = Column(Float)              # Forced Expiratory Volume 1s (Liters)
+    pefr = Column(Float)              # Peak Expiratory Flow Rate (L/min)
+    ecg_rhythm = Column(String)       # "Normal Sinus", "Sinus Tachycardia", "Atrial Fibrillation", "ST Elevation"
     recorded_at = Column(DateTime, default=datetime.utcnow)
 
     patient = relationship("PatientProfile", back_populates="vitals")
@@ -126,8 +134,11 @@ class AssessmentResult(Base):
     overall_risk_score = Column(Float)
     overall_severity = Column(String)
     heart_risk_pct = Column(Float)
+    lung_risk_pct = Column(Float)           # Lung / Respiratory Risk %
+    lung_severity = Column(String)          # "Normal", "Mild Distress", "COPD / Asthma Risk", "Critical Respiratory Failure"
     diabetes_risk_pct = Column(Float)
     ckd_risk_pct = Column(Float)
+    cardiac_efficiency_score = Column(Float)# Cardiac output & efficiency score (0-100)
     shap_explanation = Column(JSON)
     assessed_at = Column(DateTime, default=datetime.utcnow)
 
@@ -258,3 +269,28 @@ class MedicineRecommendation(Base):
     created_at = Column(DateTime, default=datetime.utcnow)
 
     patient = relationship("PatientProfile", back_populates="medicine_recommendations")
+
+
+class ClinicalExaminationRecord(Base):
+    """
+    Diagnostic ML Examination record for Breast Cancer, Cancer Cytology,
+    Heart Disease, or Diabetes examinations.
+    """
+    __tablename__ = "clinical_examinations"
+
+    id = Column(Integer, primary_key=True)
+    patient_id = Column(Integer, ForeignKey("patient_profiles.id"), nullable=True)
+    examination_type = Column(String, nullable=False)  # breast_cancer | cancer | heart_disease | diabetes
+    title = Column(String, nullable=False)
+    predicted_class = Column(String, nullable=False)
+    risk_percentage = Column(Float, nullable=False)
+    confidence_percentage = Column(Float, nullable=False)
+    severity = Column(String, nullable=False)
+    recommendation = Column(Text)
+    input_features = Column(JSON)
+    contributing_factors = Column(JSON)
+    model_metrics = Column(JSON)
+    doctor_notes = Column(Text, nullable=True)
+    created_at = Column(DateTime, default=datetime.utcnow)
+
+    patient = relationship("PatientProfile", back_populates="examinations")

@@ -73,6 +73,12 @@ class VitalsCreate(BaseModel):
     cholesterol: Optional[float] = None
     serum_creatinine: Optional[float] = None
     bmi: Optional[float] = None
+    spo2: Optional[float] = None
+    respiratory_rate: Optional[float] = None
+    hrv: Optional[float] = None
+    fev1: Optional[float] = None
+    pefr: Optional[float] = None
+    ecg_rhythm: Optional[str] = None
 
 
 class VitalsOut(VitalsCreate):
@@ -106,8 +112,11 @@ class AssessmentOut(BaseModel):
     overall_risk_score: Optional[float]
     overall_severity: Optional[str]
     heart_risk_pct: Optional[float]
+    lung_risk_pct: Optional[float] = None
+    lung_severity: Optional[str] = None
     diabetes_risk_pct: Optional[float]
     ckd_risk_pct: Optional[float]
+    cardiac_efficiency_score: Optional[float] = None
     shap_explanation: Optional[dict[str, Any]]
     assessed_at: datetime
 

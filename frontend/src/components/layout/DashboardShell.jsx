@@ -1,5 +1,5 @@
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { Activity, Bell, LogOut } from "lucide-react";
+import { Activity, Bell, LogOut, Sparkles } from "lucide-react";
 import { useAuth } from "../../context/AuthContext";
 
 export default function DashboardShell({ title, subtitle, navItems, children, headerRight }) {
@@ -11,11 +11,18 @@ export default function DashboardShell({ title, subtitle, navItems, children, he
     <div className="flex min-h-screen bg-ink-50">
       {/* Sidebar */}
       <aside className="hidden w-64 flex-shrink-0 flex-col border-r border-ink-100 bg-white px-4 py-6 md:flex">
-        <Link to="/" className="mb-8 flex items-center gap-2 px-2">
-          <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-brand-600 text-white">
-            <Activity size={16} />
+        <Link to="/" className="mb-8 flex items-center gap-3 px-2 group">
+          <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-brand-600 to-brand-800 text-white shadow-sm ring-2 ring-brand-100 group-hover:scale-105 transition-transform">
+            <Activity size={18} className="text-white" />
           </span>
-          <span className="font-display text-base font-bold text-ink-900">HealthSphere</span>
+          <div className="flex flex-col text-left">
+            <span className="font-display text-sm font-extrabold tracking-tight text-ink-900 leading-tight">
+              Smart Hospital
+            </span>
+            <span className="text-[10px] font-bold uppercase tracking-wider text-brand-600 -mt-0.5 flex items-center gap-1">
+              Management <span className="inline-block h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
+            </span>
+          </div>
         </Link>
 
         <nav className="flex flex-1 flex-col gap-1">
@@ -34,6 +41,21 @@ export default function DashboardShell({ title, subtitle, navItems, children, he
               </Link>
             );
           })}
+
+          <div className="my-2 border-t border-ink-100 pt-2">
+            <p className="px-3 text-[10px] font-bold uppercase tracking-wider text-ink-400">Clinical AI Hub</p>
+            <Link
+              to="/examinations"
+              className={`mt-1 flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition ${
+                location.pathname === "/examinations"
+                  ? "bg-brand-50 text-brand-700 font-semibold shadow-xs"
+                  : "text-ink-700 hover:bg-brand-50/50 hover:text-brand-700"
+              }`}
+            >
+              <Sparkles size={18} className="text-brand-600" />
+              Clinical Examinations
+            </Link>
+          </div>
         </nav>
 
         <div className="mt-auto rounded-xl bg-ink-50 p-3">

@@ -36,6 +36,12 @@ def run_assessment(patient_id: int, db: Session = Depends(get_db), user: User = 
         cholesterol=latest_vitals.cholesterol,
         serum_creatinine=latest_vitals.serum_creatinine,
         bmi=latest_vitals.bmi,
+        spo2=latest_vitals.spo2,
+        respiratory_rate=latest_vitals.respiratory_rate,
+        hrv=latest_vitals.hrv,
+        fev1=latest_vitals.fev1,
+        pefr=latest_vitals.pefr,
+        ecg_rhythm=latest_vitals.ecg_rhythm,
     )
 
     assessment = AssessmentResult(patient_id=patient_id, assessed_at=datetime.utcnow(), **result)

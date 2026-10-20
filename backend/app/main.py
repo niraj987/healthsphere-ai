@@ -12,7 +12,8 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from app.core.config import settings
 from app.db.init_db import init_db
-from app.routers import agents_and_chat, assessments, auth, doctors, notifications, patients
+from app.routers import agents_and_chat, assessments, auth, doctors, examinations, notifications, patients
+from app.services.clinical_models import train_and_save_all_models
 
 app = FastAPI(
     title=settings.APP_NAME,
@@ -23,7 +24,7 @@ app = FastAPI(
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=settings.CORS_ORIGINS,
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -33,6 +34,7 @@ app.include_router(auth.router)
 app.include_router(patients.router)
 app.include_router(doctors.router)
 app.include_router(assessments.router)
+app.include_router(examinations.router)
 app.include_router(notifications.router)
 app.include_router(agents_and_chat.router, prefix="/api")
 
@@ -40,6 +42,10 @@ app.include_router(agents_and_chat.router, prefix="/api")
 @app.on_event("startup")
 def on_startup():
     init_db()
+    try:
+        train_and_save_all_models()
+    except Exception as e:
+        print(f"Warning initializing clinical models: {e}")
 
 
 @app.get("/")

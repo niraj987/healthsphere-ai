@@ -8,7 +8,7 @@ load_dotenv()
 
 
 class Settings:
-    APP_NAME: str = "HealthSphere AI"
+    APP_NAME: str = "Smart Hospital Management"
 
     DATABASE_URL: str = os.getenv("DATABASE_URL", "sqlite:///./db/healthsphere.db")
 

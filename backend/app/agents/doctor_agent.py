@@ -76,9 +76,18 @@ def build_prioritized_worklist(db: Session, limit: int = 25) -> list[WorklistIte
             .count()
         )
 
-        severity = (latest_assessment.overall_severity or "low").lower()
+        sev_lower = (latest_assessment.overall_severity or "low").lower()
+        if "critical" in sev_lower:
+            weight = 4
+        elif "high" in sev_lower:
+            weight = 3
+        elif "moderate" in sev_lower or "medium" in sev_lower:
+            weight = 2
+        else:
+            weight = 1
+
         score = (
-            SEVERITY_WEIGHT.get(severity, 1) * 10
+            weight * 10
             + open_escalations * 15
             + min(days_since, 30) * 0.5
         )
@@ -87,7 +96,7 @@ def build_prioritized_worklist(db: Session, limit: int = 25) -> list[WorklistIte
             WorklistItem(
                 patient_id=patient.id,
                 patient_name=patient.user.full_name if patient.user else f"Patient #{patient.id}",
-                severity=severity,
+                severity=latest_assessment.overall_severity or "low",
                 days_since_last_assessment=days_since,
                 open_escalations=open_escalations,
                 priority_score=round(score, 1),

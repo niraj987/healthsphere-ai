@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import gsap from "gsap";
 import { ArrowLeft, ClipboardCheck, FileWarning, LayoutDashboard, Loader2, PenSquare, Pill } from "lucide-react";
+import CardiopulmonaryCard from "../../components/CardiopulmonaryCard";
 import DashboardShell from "../../components/layout/DashboardShell";
 import ChatWidget from "../../components/ChatWidget";
 import RiskGauge from "../../components/RiskGauge";
@@ -87,6 +88,8 @@ export default function PatientDetail() {
     );
   }
 
+  const latestVital = vitals.length > 0 ? vitals[vitals.length - 1] : null;
+
   return (
     <DashboardShell title={patient?.full_name || `Patient #${patientId}`} subtitle="Patient chart" navItems={NAV_ITEMS}>
       <Link to="/doctor" className="dash-fade mb-6 inline-flex items-center gap-1 text-sm font-medium text-ink-500 hover:text-brand-600">
@@ -106,6 +109,10 @@ export default function PatientDetail() {
         </div>
       </div>
 
+      <div className="dash-fade mb-8">
+        <CardiopulmonaryCard assessment={assessment} latestVital={latestVital} />
+      </div>
+
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
         {/* Vitals trend */}
         <div className="dash-fade card p-6 lg:col-span-2">
@@ -120,10 +127,11 @@ export default function PatientDetail() {
           <h2 className="font-display text-lg font-semibold text-ink-900">Latest assessment</h2>
           {assessment ? (
             <>
-              <div className="mt-5 grid grid-cols-3 gap-2">
-                <RiskGauge label="Heart" percent={assessment.heart_risk_pct} size={88} />
-                <RiskGauge label="Diabetes" percent={assessment.diabetes_risk_pct} size={88} />
-                <RiskGauge label="CKD" percent={assessment.ckd_risk_pct} size={88} />
+              <div className="mt-5 grid grid-cols-2 gap-2 sm:grid-cols-4">
+                <RiskGauge label="Heart" percent={assessment.heart_risk_pct} size={72} />
+                <RiskGauge label="Lung" percent={assessment.lung_risk_pct ?? 0} size={72} />
+                <RiskGauge label="Diabetes" percent={assessment.diabetes_risk_pct} size={72} />
+                <RiskGauge label="CKD" percent={assessment.ckd_risk_pct} size={72} />
               </div>
               <div className="mt-4"><SeverityBadge value={assessment.overall_severity} /></div>
               <button
